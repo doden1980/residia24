@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RESIDIA24 – Immobilien</title>
+
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f5f7f9;color:#102b46}
+header{height:72px;background:#fff;border-bottom:1px solid #ddd;
+display:flex;align-items:center;padding:0 5%;gap:28px;position:sticky;top:0;z-index:10}
+.logo{font-size:25px;font-weight:900;color:#102b46;flex:1}
+.logo span{background:#c9a35a;color:#fff;padding:7px 10px;border-radius:7px;margin-right:7px}
+nav{display:flex;gap:20px}
+nav a{font-weight:bold;cursor:pointer}
+button{border:0;border-radius:8px;padding:12px 18px;
+background:#1b659d;color:white;font-weight:bold;cursor:pointer}
+.secondary{background:white;color:#1b659d;border:1px solid #ccd8e3}
+
+.hero{
+min-height:480px;padding:75px 5%;color:white;
+background:
+linear-gradient(90deg,#071b30e8,#071b3040),
+url("https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1800&q=85")
+center/cover
+}
+
+.hero h1{font:60px Georgia,serif;margin:0}
+.hero h1 span{color:#e0c17b}
+.hero p{font-size:19px}
+
+.search{
+max-width:1200px;margin:45px auto 0;background:white;
+padding:18px;border-radius:15px;color:#102b46;
+box-shadow:0 15px 40px #0005
+}
+
+.tabs button{background:white;color:#555}
+.tabs .active{background:#1b659d;color:white}
+
+.searchgrid{
+display:grid;
+grid-template-columns:1.5fr 1fr 1fr 1fr auto;
+gap:8px;margin-top:12px
+}
+
+.field{
+border:1px solid #d6e0e8;
+border-radius:8px;padding:10px
+}
+
+.field small{
+display:block;color:#718093;font-size:10px;font-weight:bold
+}
+
+.field input,.field select{
+width:100%;border:0;outline:0;padding:6px 0
+}
+
+main{max-width:1200px;margin:auto;padding:45px 20px}
+
+.cards{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:18px
+}
+
+.card{
+background:white;
+border:1px solid #dfe6ed;
+border-radius:13px;
+overflow:hidden;
+cursor:pointer
+}
+
+.card:hover{
+transform:translateY(-3px);
+box-shadow:0 12px 30px #0002
+}
+
+.image{
+height:180px;
+background-size:cover;
+background-position:center;
+position:relative
+}
+
+.badge{
+position:absolute;
+top:10px;
+left:10px;
+background:#1b659d;
+color:white;
+padding:6px 9px;
+border-radius:5px;
+font-size:10px
+}
+
+.body{padding:15px}
+.price{font-size:20px;font-weight:900}
+.address{color:#68798b;font-size:13px;margin-top:7px}
+
+.detail{
+display:none;
+background:white;
+padding:25px;
+border-radius:14px;
+margin-top:25px
+}
+
+.detail.active{display:block}
+
+.detailgrid{
+display:grid;
+grid-template-columns:1.5fr 1fr;
+gap:25px
+}
+
+.detailimage{
+height:380px;
+background-size:cover;
+background-position:center;
+border-radius:10px
+}
+
+.features{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:18px;
+margin-top:50px
+}
+
+.feature{
+background:white;
+padding:25px;
+border-radius:12px;
+border:1px solid #dfe6ed
+}
+
+footer{
+background:#0b2238;
+color:white;
+padding:40px 5%;
+margin-top:40px
+}
+
+@media(max-width:900px){
+nav{display:none}
+.cards{grid-template-columns:1fr 1fr}
+.searchgrid{grid-template-columns:1fr 1fr}
+.detailgrid{grid-template-columns:1fr}
+.features{grid-template-columns:1fr}
+}
+
+@media(max-width:600px){
+.cards{grid-template-columns:1fr}
+.searchgrid{grid-template-columns:1fr}
+.hero h1{font-size:45px}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+<div class="logo">
+<span>R</span>RESIDIA24
+</div>
+
+<nav>
+<a onclick="setMode('Kaufen')">Kaufen</a>
+<a onclick="setMode('Mieten')">Mieten</a>
+<a onclick="setMode('Gewerbe')">Gewerbe</a>
+<a onclick="alert('Neubau – kommt als nächster Bereich')">Neubau</a>
+<a onclick="alert('Ratgeber – kommt als nächster Bereich')">Ratgeber</a>
+</nav>
+
+<button class="secondary" onclick="alert('Login-Bereich')">
+Anmelden
+</button>
+
+<button onclick="alert('Inserat erstellen')">
+Inserieren
+</button>
+
+</header>
+
+
+<section class="hero">
+
+<p>RESIDIA24 IMMOBILIENPORTAL</p>
+
+<h1>
+Ihr neues<br>
+<span>Zuhause.</span>
+</h1>
+
+<p>
+Wohnungen, Häuser, Grundstücke und Gewerbeimmobilien einfach finden.
+</p>
+
+
+<div class="search">
+
+<div class="tabs">
+
+<button id="kaufen" class="active"
+onclick="setMode('Kaufen')">
+Kaufen
+</button>
+
+<button id="mieten"
+onclick="setMode('Mieten')">
+Mieten
+</button>
+
+<button id="gewerbe"
+onclick="setMode('Gewerbe')">
+Gewerbe
+</button>
+
+</div>
+
+
+<div class="searchgrid">
+
+<div class="field">
+<small>WO?</small>
+<input id="location"
+placeholder="Ort, PLZ oder Stadtteil">
+</div>
+
+
+<div class="field">
+<small>IMMOBILIENTYP</small>
+
+<select id="type">
+
+<option>Alle</option>
+<option>Wohnung</option>
+<option>Haus</option>
+<option>Grundstück</option>
+<option>Gewerbe</option>
+
+</select>
+
+</div>
+
+
+<div class="field">
+
+<small>PREIS BIS</small>
+
+<input
+id="maxprice"
+type="number"
+placeholder="500000">
+
+</div>
+
+
+<div class="field">
+
+<small>ZIMMER</small>
+
+<select id="rooms">
+
+<option>Beliebig</option>
+<option>2+</option>
+<option>3+</option>
+<option>4+</option>
+
+</select>
+
+</div>
+
+
+<button onclick="search()">
+Immobilien finden
+</button>
+
+</div>
+
+</div>
+
+</section>
+
+
+<main>
+
+<h2>Top Immobilien</h2>
+
+<div id="cards" class="cards"></div>
+
+<div id="detail" class="detail"></div>
+
+
+<div class="features">
+
+<div class="feature">
+<h3>🔎 Smarte Suche</h3>
+<p>
+Immobilien nach Ort, Preis, Zimmern und Typ durchsuchen.
+</p>
+</div>
+
+<div class="feature">
+<h3>♡ Merkliste</h3>
+<p>
+Interessante Immobilien speichern und später wiederfinden.
+</p>
+</div>
+
+<div class="feature">
+<h3>🔔 Suchauftrag</h3>
+<p>
+Neue passende Immobilien automatisch finden.
+</p>
+</div>
+
+</div>
+
+</main>
+
+
+<footer>
+
+<h2>RESIDIA24</h2>
+
+<p>
+Immobilien. Einfach. Direkt.
+</p>
+
+<p>
+© 2026 RESIDIA24
+</p>
+
+</footer>
+
+
+<script>
+
+const immobilien = [
+
+{
+id:1,
+mode:"Kaufen",
+type:"Haus",
+price:489000,
+priceText:"489.000 €",
+title:"Modernes Einfamilienhaus",
+location:"Berlin – Mahlsdorf",
+area:120,
+rooms:4,
+image:"https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=900&q=80"
+},
+
+{
+id:2,
+mode:"Kaufen",
+type:"Wohnung",
+price:359000,
+priceText:"359.000 €",
+title:"Helle 3-Zimmer-Wohnung",
+location:"München – Maxvorstadt",
+area:85,
+rooms:3,
+image:"https://images.unsplash.com/photo-1600607688969-a5bfcd646154?auto=format&fit=crop&w=900&q=80"
+},
+
+{
+id:3,
+mode:"Mieten",
+type:"Wohnung",
+price:1450,
+priceText:"1.450 € / Monat",
+title:"Stylische Stadtwohnung",
+location:"Berlin – Friedrichshain",
+area:68,
+rooms:2,
+image:"https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=900&q=80"
+},
+
+{
+id:4,
+mode:"Gewerbe",
+type:"Gewerbe",
+price:2200,
+priceText:"2.200 € / Monat",
+title:"Moderne Bürofläche",
+location:"Hamburg – Altstadt",
+area:120,
+rooms:4,
+image:"https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=900&q=80"
+},
+
+{
+id:5,
+mode:"Kaufen",
+type:"Grundstück",
+price:329000,
+priceText:"329.000 €",
+title:"Baugrundstück",
+location:"Potsdam – Babelsberg",
+area:620,
+rooms:0,
+image:"https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=900&q=80"
+}
+
+];
+
+
+let currentMode="Kaufen";
+
+
+function render(list){
+
+document.getElementById("cards").innerHTML = list.map(p => `
+
+<div class="card" onclick="showDetail(${p.id})">
+
+<div class="image"
+style="background-image:url('${p.image}')">
+
+<div class="badge">
+${p.type}
+</div>
+
+</div>
+
+<div class="body">
+
+<div class="price">
+${p.priceText}
+</div>
+
+<h3>
+${p.title}
+</h3>
+
+<div class="address">
+⌖ ${p.location}
+</div>
+
+<div class="address">
+${p.area} m² · ${p.rooms} Zimmer
+</div>
+
+</div>
+
+</div>
+
+`).join("");
+
+}
+
+
+function setMode(mode){
+
+currentMode=mode;
+
+document.querySelectorAll(".tabs button")
+.forEach(x=>x.classList.remove("active"));
+
+if(mode==="Kaufen")
+document.getElementById("kaufen").classList.add("active");
+
+if(mode==="Mieten")
+document.getElementById("mieten").classList.add("active");
+
+if(mode==="Gewerbe")
+document.getElementById("gewerbe").classList.add("active");
+
+search();
+
+}
+
+
+function search(){
+
+const location=
+document.getElementById("location")
+.value.toLowerCase();
+
+const type=
+document.getElementById("type").value;
+
+const max=
+Number(document.getElementById("maxprice").value)
+||Infinity;
+
+const roomsValue=
+document.getElementById("rooms").value;
+
+const minRooms=
+roomsValue==="Beliebig"
+?0
+:Number(roomsValue[0]);
+
+
+const result=immobilien.filter(p=>{
+
+return (
+
+p.mode===currentMode &&
+
+(!location ||
+p.location.toLowerCase().includes(location)) &&
+
+(type==="Alle" || p.type===type) &&
+
+p.price<=max &&
+
+p.rooms>=minRooms
+
+);
+
+});
+
+
+render(result);
+
+}
+
+
+function showDetail(id){
+
+const p=
+immobilien.find(x=>x.id===id);
+
+const detail=
+document.getElementById("detail");
+
+detail.innerHTML=`
+
+<button
+class="secondary"
+onclick="closeDetail()">
+← Zurück
+</button>
+
+<div class="detailgrid">
+
+<div
+class="detailimage"
+style="background-image:url('${p.image}')">
+</div>
+
+<div>
+
+<h1>${p.title}</h1>
+
+<h2>${p.priceText}</h2>
+
+<p>⌖ ${p.location}</p>
+
+<p>
+<strong>${p.area} m²</strong>
+&nbsp; · &nbsp;
+<strong>${p.rooms} Zimmer</strong>
+&nbsp; · &nbsp;
+${p.type}
+</p>
+
+<p>
+Dieses Exposé ist Teil des ersten
+RESIDIA24-Prototyps.
+</p>
+
+<button onclick="alert('Kontaktanfrage gesendet')">
+Anbieter kontaktieren
+</button>
+
+<button
+class="secondary"
+onclick="alert('Immobilie gespeichert')">
+♡ Merken
+</button>
+
+</div>
+
+</div>
+`;
+
+detail.classList.add("active");
+
+detail.scrollIntoView({
+behavior:"smooth"
+});
+
+}
+
+
+function closeDetail(){
+
+document
+.getElementById("detail")
+.classList.remove("active");
+
+}
+
+
+render(immobilien);
+
+</script>
+
+</body>
+</html>
