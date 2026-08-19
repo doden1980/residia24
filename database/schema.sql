@@ -1,0 +1,52 @@
+CREATE TABLE IF NOT EXISTS users (
+  id BIGSERIAL PRIMARY KEY,
+  name VARCHAR(120) NOT NULL,
+  email VARCHAR(320) NOT NULL UNIQUE,
+  password_hash TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS listings (
+  id BIGSERIAL PRIMARY KEY,
+  owner_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  title VARCHAR(180) NOT NULL,
+  type VARCHAR(40) NOT NULL,
+  mode VARCHAR(20) NOT NULL,
+  price NUMERIC(14,2) NOT NULL DEFAULT 0,
+  location VARCHAR(180) NOT NULL,
+  area_m2 NUMERIC(10,2) NOT NULL DEFAULT 0,
+  rooms NUMERIC(5,1) NOT NULL DEFAULT 0,
+  image_url TEXT,
+  description TEXT,
+  status VARCHAR(20) NOT NULL DEFAULT 'published',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS listings_status_idx ON listings(status);
+CREATE INDEX IF NOT EXISTS listings_owner_idx ON listings(owner_id);
+CREATE INDEX IF NOT EXISTS listings_location_idx ON listings(location);
+
+CREATE TABLE IF NOT EXISTS favorites (
+  user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  listing_id BIGINT NOT NULL REFERENCES listings(id) ON DELETE CASCADE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  PRIMARY KEY(user_id, listing_id)
+);
+
+CREATE TABLE IF NOT EXISTS saved_searches (
+  id BIGSERIAL PRIMARY KEY,
+  user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  name VARCHAR(120) NOT NULL,
+  criteria JSONB NOT NULL DEFAULT '{}'::jsonb,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS messages (
+  id BIGSERIAL PRIMARY KEY,
+  sender_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  recipient_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  listing_id BIGINT REFERENCES listings(id) ON DELETE SET NULL,
+  body TEXT NOT NULL,
+  read_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS messages_recipient_idx ON messages(recipient_id, created_at DESC);
