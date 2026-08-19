@@ -12,7 +12,16 @@ module.exports = async (req, res) => {
     if (name.length < 2) return json(res, 400, { error: 'Name ist zu kurz.' });
     if (!/^\S+@\S+\.\S+$/.test(email)) return json(res, 400, { error: 'Ungültige E-Mail-Adresse.' });
     if (password.length < 8) return json(res, 400, { error: 'Passwort muss mindestens 8 Zeichen haben.' });
+
     const sql = db();
+    await sql`CREATE TABLE IF NOT EXISTS users (
+      id BIGSERIAL PRIMARY KEY,
+      name TEXT NOT NULL,
+      email TEXT NOT NULL UNIQUE,
+      password_hash TEXT NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )`;
+
     const existing = await sql`SELECT id FROM users WHERE email=${email} LIMIT 1`;
     if (existing.length) return json(res, 409, { error: 'E-Mail ist bereits registriert.' });
     const hash = await bcrypt.hash(password, 12);
