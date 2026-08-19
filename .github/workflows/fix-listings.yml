@@ -1,0 +1,35 @@
+name: Fix listings frontend
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  patch:
+    if: ${{ !contains(github.event.head_commit.message, '[listing-fix]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch listings integration
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text()
+          old="function search(){let l=document.getElementById('loc').value.toLowerCase(),t=document.getElementById('type').value,max=Number(document.getElementById('max').value)||Infinity,min=Number(document.getElementById('area').value)||0,r=document.getElementById('rooms').value==='Beliebig'?0:Number(document.getElementById('rooms').value[0]);render(DEMO.filter(p=>p.mode===mode&&(!l||p.loc.toLowerCase().includes(l))&&(t==='Alle'||p.type===t)&&p.price<=max&&p.area>=min&&p.rooms>=r))}"
+          new="function search(){let l=document.getElementById('loc').value.toLowerCase(),t=document.getElementById('type').value,max=Number(document.getElementById('max').value)||Infinity,min=Number(document.getElementById('area').value)||0,r=document.getElementById('rooms').value==='Beliebig'?0:Number(document.getElementById('rooms').value[0]);render([...DEMO,...listings].filter(p=>p.mode===mode&&(!l||String(p.loc||p.location||'').toLowerCase().includes(l))&&(t==='Alle'||p.type===t)&&Number(p.price)<=max&&Number(p.area||p.area_m2)>=min&&Number(p.rooms)>=r))}"
+          s=s.replace(old,new)
+          s=s.replace("async function createListing(){toast('Inserat-API wird als nächstes verbunden.');}","async function createListing(){try{if(!user)throw new Error('Bitte zuerst anmelden.');const d=await api('/api/listings',{method:'POST',body:JSON.stringify({title:document.getElementById('ltitle').value,type:document.getElementById('ltype').value,mode:document.getElementById('lmode').value,price:Number(document.getElementById('lprice').value),location:document.getElementById('lloc').value,area_m2:Number(document.getElementById('larea').value),rooms:Number(document.getElementById('lrooms').value),image_url:'',description:''})});closeModal('listingModal');toast('Inserat erfolgreich gespeichert.');await loadListings();openAccount();dash('my')}catch(e){toast(e.message)}}")
+          s=s.replace("render(DEMO.filter(x=>x.mode===mode));loadSession();","render(DEMO.filter(x=>x.mode===mode));loadSession();loadListings();")
+          marker="async function logout(){"
+          insert="async function loadListings(){try{const d=await api('/api/listings');listings=(d.listings||[]).map(x=>({...x,img:x.image_url||DEMO[0].img,loc:x.location,text:Number(x.price).toLocaleString('de-DE')+' €',area:x.area_m2||0}));search();if(user)updateDash()}catch(e){console.warn('Listings:',e.message)}}\n"
+          if insert not in s: s=s.replace(marker,insert+marker)
+          p.write_text(s)
+          PY
+      - name: Commit patch
+        run: |
+          git config user.name 'residia24-bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add index.html
+          git diff --cached --quiet || git commit -m 'Fix listings API integration [listing-fix]'
+          git push
